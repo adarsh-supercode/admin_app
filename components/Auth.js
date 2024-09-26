@@ -1,4 +1,5 @@
 // components/Auth.js
+/* eslint-disable react/no-unescaped-entities */
 
 import { useState } from 'react';
 import SignupForm from './SignupForm';
@@ -21,7 +22,6 @@ const Auth = () => {
           <LoginForm setMessage={setMessage} />
           <p>{message}</p>
           <p>
-            Don't have an account? 
             <span onClick={() => setIsSignedUp(false)} style={{ cursor: 'pointer', color: 'blue' }}>
               Go to Sign Up
             </span>
