@@ -1,10 +1,9 @@
-// pages/admin.js
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie'; 
 import jwt from 'jsonwebtoken';
 
+// Fetch user data server-side
 export const getServerSideProps = async (context) => {
   const { req } = context;
   const token = req.cookies.token;
@@ -23,7 +22,7 @@ export const getServerSideProps = async (context) => {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return {
-      props: { user: decoded }, 
+      props: { user: decoded }, // Pass the decoded user data to the component
     };
   } catch (error) {
     // If token verification fails, redirect to the login page
@@ -39,6 +38,7 @@ export const getServerSideProps = async (context) => {
 const AdminPanel = ({ user }) => {
   const router = useRouter();
 
+  // This effect checks for the token in the client-side for additional safety
   useEffect(() => {
     const token = Cookies.get('token'); 
     if (!token) {
