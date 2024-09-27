@@ -9,7 +9,8 @@ const Login = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const isLoggedIn = typeof window !== "undefined" && sessionStorage.getItem('isLoggedIn');
+    // Check if the user is already logged in
+    const isLoggedIn = typeof window !== 'undefined' && sessionStorage.getItem('token');
     if (isLoggedIn) {
       router.push('/admin'); 
     }
@@ -19,7 +20,7 @@ const Login = () => {
     <div>
       <h1>Login</h1>
       <LoginForm setMessage={setMessage} />
-      {message && <p>{message}</p>} {/* Display the message */}
+      {message && <p>{message}</p>}
     </div>
   );
 };

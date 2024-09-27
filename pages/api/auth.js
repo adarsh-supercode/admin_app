@@ -1,6 +1,7 @@
 // pages/api/auth.js
 
 import { supabase } from '../../lib/supabaseClient';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -10,7 +11,7 @@ export default async function handler(req, res) {
       if (type === 'signup') {
         // Check if the username already exists
         const { data: existingUser, error: checkError } = await supabase
-          .from('admin_panel') // Use your actual table name
+          .from('admin_panel')
           .select('*')
           .eq('username', username);
 
@@ -44,12 +45,16 @@ export default async function handler(req, res) {
           .eq('username', username)
           .single();
 
-        if (fetchError || !userData || userData.password !== password) { // Add password hashing here
+        if (fetchError || !userData || userData.password !== password) {
           return res.status(400).json({ message: 'Invalid credentials.' });
         }
 
-        // If login is successful, store the session or any user-specific data
-        return res.status(200).json({ message: 'Login successful!', user: userData });
+        // Create a JWT token
+        const token = jwt.sign({ username: userData.username }, process.env.JWT_SECRET, {
+          expiresIn: '7d', 
+        });
+
+        return res.status(200).json({ message: 'Login successful!', token }); 
       }
 
       // If method is not POST, return method not allowed

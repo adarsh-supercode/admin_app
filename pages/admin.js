@@ -1,36 +1,56 @@
 // pages/admin.js
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie'; 
+import jwt from 'jsonwebtoken';
 
-const AdminPanel = () => {
-  const [username, setUsername] = useState('Guest');
+export const getServerSideProps = async (context) => {
+  const { req } = context;
+  const token = req.cookies.token;
+
+  if (!token) {
+    // If there's no token, redirect to the login page
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return {
+      props: { user: decoded }, 
+    };
+  } catch (error) {
+    // If token verification fails, redirect to the login page
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+};
+
+const AdminPanel = ({ user }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the user is logged in
-    const isLoggedIn = typeof window !== "undefined" && sessionStorage.getItem('isLoggedIn');
-    if (!isLoggedIn) {
-      // Redirect to login page if not logged in
-      router.push('/login');
-    } else {
-      // Set username if logged in
-      setUsername(sessionStorage.getItem('username') || 'Guest');
+    const token = Cookies.get('token'); 
+    if (!token) {
+      router.push('/login'); 
     }
   }, [router]);
 
-  const handleLogout = () => {
-    // Clear login state from sessionStorage
-    sessionStorage.removeItem('isLoggedIn');
-    sessionStorage.removeItem('username'); 
-    router.push('/login');
-  };
-
   return (
     <div>
-      <h1>Admin Panel</h1>
-      <p>Welcome to the admin panel, {username}!</p>
-      <button onClick={handleLogout}>Logout</button>
+      <h1>Welcome to the Admin Panel</h1>
+      <p>Hello, {user.username}</p>
+      {/* Admin panel content goes here */}
     </div>
   );
 };

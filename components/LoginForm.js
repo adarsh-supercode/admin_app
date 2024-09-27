@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/router'; 
+import Cookies from 'js-cookie'; // Add this for cookie management
 
 const LoginForm = ({ setMessage }) => {
   const [username, setUsername] = useState('');
@@ -23,6 +24,9 @@ const LoginForm = ({ setMessage }) => {
     setMessage(data.message); 
 
     if (res.ok) {
+      // Store the JWT token in cookies
+      Cookies.set('token', data.token, { expires: 7 }); 
+
       // Store login state in sessionStorage
       sessionStorage.setItem('isLoggedIn', true);
       sessionStorage.setItem('username', username);
