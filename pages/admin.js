@@ -25,6 +25,9 @@ export const getServerSideProps = async (context) => {
       props: { user: decoded }, // Pass the decoded user data to the component
     };
   } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Token verification failed:', error);
+
     // If token verification fails, redirect to the login page
     return {
       redirect: {
