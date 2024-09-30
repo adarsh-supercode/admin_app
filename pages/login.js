@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import LoginForm from '../components/LoginForm';
 
 export const getServerSideProps = async (context) => {
@@ -21,7 +20,6 @@ export const getServerSideProps = async (context) => {
 };
 
 const Login = () => {
-  const router = useRouter();
   const [message, setMessage] = useState('');
 
   return (
