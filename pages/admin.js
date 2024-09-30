@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../lib/supabaseClient';
 
+// Server-side authentication to protect the admin panel
 export const getServerSideProps = async (context) => {
   const { req } = context;
   const token = req.cookies.token;
@@ -20,7 +21,8 @@ export const getServerSideProps = async (context) => {
     return {
       props: { user: decoded },
     };
-  } catch (error) {
+  } catch {
+    // You can log the error here if needed
     return {
       redirect: {
         destination: '/login',
@@ -67,7 +69,7 @@ const AdminPanel = ({ user }) => {
     if (error) {
       console.error('Error updating profile:', error.message);
     } else {
-      setEditMode(false); 
+      setEditMode(false);
     }
   };
 

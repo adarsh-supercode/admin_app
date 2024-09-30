@@ -56,7 +56,9 @@ export default async function handler(req, res) {
       }
 
       return res.status(405).json({ message: 'Method not allowed' });
-    } catch (error) {
+    } catch (err) {
+      // Log the error if necessary
+      console.error('Error during authentication:', err);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   } else {

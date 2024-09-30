@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import SignupForm from '../components/SignupForm';
+import SignupForm from '../components/SignupForm'; // Ensure this path is correct
 
 export const getServerSideProps = async (context) => {
   const { req } = context;
