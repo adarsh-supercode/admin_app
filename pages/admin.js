@@ -1,15 +1,12 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Cookies from 'js-cookie'; 
+import { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
+import { supabase } from '../lib/supabaseClient';
 
-// Fetch user data server-side
 export const getServerSideProps = async (context) => {
   const { req } = context;
   const token = req.cookies.token;
 
   if (!token) {
-    // If there's no token, redirect to the login page
     return {
       redirect: {
         destination: '/login',
@@ -19,16 +16,11 @@ export const getServerSideProps = async (context) => {
   }
 
   try {
-    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return {
-      props: { user: decoded }, // Pass the decoded user data to the component
+      props: { user: decoded },
     };
   } catch (error) {
-    // Log the error for debugging purposes
-    console.error('Token verification failed:', error);
-
-    // If token verification fails, redirect to the login page
     return {
       redirect: {
         destination: '/login',
@@ -39,21 +31,85 @@ export const getServerSideProps = async (context) => {
 };
 
 const AdminPanel = ({ user }) => {
-  const router = useRouter();
+  const [bio, setBio] = useState('');
+  const [website, setWebsite] = useState('');
+  const [editMode, setEditMode] = useState(false);
 
-  // This effect checks for the token in the client-side for additional safety
+  // Fetch profile data when the component mounts
   useEffect(() => {
-    const token = Cookies.get('token'); 
-    if (!token) {
-      router.push('/login'); 
+    const fetchProfileData = async () => {
+      const { data, error } = await supabase
+        .from('admin_panel')
+        .select('bio, website')
+        .eq('username', user.username)
+        .single();
+
+      if (data) {
+        setBio(data.bio || '');
+        setWebsite(data.website || '');
+      }
+      if (error) {
+        console.error('Error fetching profile:', error.message);
+      }
+    };
+
+    fetchProfileData();
+  }, [user.username]);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    const { error } = await supabase
+      .from('admin_panel')
+      .update({ bio, website })
+      .eq('username', user.username);
+
+    if (error) {
+      console.error('Error updating profile:', error.message);
+    } else {
+      setEditMode(false); 
     }
-  }, [router]);
+  };
 
   return (
     <div>
       <h1>Welcome to the Admin Panel</h1>
       <p>Hello, {user.username}</p>
-      {/* Admin panel content goes here */}
+
+      <section>
+        <h2>My Account</h2>
+        {editMode ? (
+          <form onSubmit={handleUpdate}>
+            <label>
+              Bio:
+              <textarea 
+                value={bio} 
+                onChange={(e) => setBio(e.target.value)} 
+                required 
+              />
+            </label>
+            <label>
+              Website URL:
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                required 
+              />
+            </label>
+            <button type="submit">Save</button>
+            <button type="button" onClick={() => setEditMode(false)}>
+              Cancel
+            </button>
+          </form>
+        ) : (
+          <div>
+            <p><strong>Bio:</strong> {bio || 'No bio set yet'}</p>
+            <p><strong>Website URL:</strong> {website || 'No website set yet'}</p>
+            <button onClick={() => setEditMode(true)}>Edit</button>
+          </div>
+        )}
+      </section>
     </div>
   );
 };

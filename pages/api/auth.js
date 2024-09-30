@@ -1,5 +1,3 @@
-// pages/api/auth.js
-
 import { supabase } from '../../lib/supabaseClient';
 import jwt from 'jsonwebtoken';
 
@@ -16,7 +14,6 @@ export default async function handler(req, res) {
           .eq('username', username);
 
         if (checkError) {
-          console.error('Check Error:', checkError.message);
           return res.status(400).json({ message: 'Error checking username.' });
         }
 
@@ -27,10 +24,9 @@ export default async function handler(req, res) {
         // Insert new user into the admin_panel table
         const { error: insertError } = await supabase
           .from('admin_panel')
-          .insert([{ username, password }]); 
+          .insert([{ username, password }]);
 
         if (insertError) {
-          console.error('Insert Error:', insertError.message);
           return res.status(400).json({ message: insertError.message });
         }
 
@@ -51,16 +47,16 @@ export default async function handler(req, res) {
 
         // Create a JWT token
         const token = jwt.sign({ username: userData.username }, process.env.JWT_SECRET, {
-          expiresIn: '7d', 
+          expiresIn: '7d',
         });
 
-        return res.status(200).json({ message: 'Login successful!', token }); 
+        // Set the token as a cookie
+        res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=604800;`);
+        return res.status(200).json({ message: 'Login successful!' });
       }
 
-      // If method is not POST, return method not allowed
       return res.status(405).json({ message: 'Method not allowed' });
     } catch (error) {
-      console.error('Server Error:', error.message);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   } else {

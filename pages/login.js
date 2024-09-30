@@ -1,20 +1,25 @@
-// pages/login.js
+import { isAuthenticated } from '../utils/auth';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import LoginForm from '../components/LoginForm';
+export const getServerSideProps = async (context) => {
+  const { req } = context;
+
+  if (isAuthenticated(req)) {
+    return {
+      redirect: {
+        destination: '/admin',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {}, 
+  };
+};
 
 const Login = () => {
   const router = useRouter();
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    // Check if the user is already logged in
-    const isLoggedIn = typeof window !== 'undefined' && sessionStorage.getItem('token');
-    if (isLoggedIn) {
-      router.push('/admin'); 
-    }
-  }, [router]);
 
   return (
     <div>

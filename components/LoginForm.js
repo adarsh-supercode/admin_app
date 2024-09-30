@@ -1,13 +1,11 @@
-// components/LoginForm.js
-
 import { useState } from 'react';
-import { useRouter } from 'next/router'; 
-import Cookies from 'js-cookie'; // Add this for cookie management
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 const LoginForm = ({ setMessage }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); 
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,19 +17,14 @@ const LoginForm = ({ setMessage }) => {
       },
       body: JSON.stringify({ type: 'login', username, password }),
     });
-    
+
     const data = await res.json();
-    setMessage(data.message); 
+    setMessage(data.message);
 
     if (res.ok) {
-      // Store the JWT token in cookies
-      Cookies.set('token', data.token, { expires: 7 }); 
-
-      // Store login state in sessionStorage
+      Cookies.set('token', data.token, { expires: 7 });
       sessionStorage.setItem('isLoggedIn', true);
-      sessionStorage.setItem('username', username);
-      
-      // Redirect to the admin page after successful login
+      sessionStorage.setItem('token', data.token);
       router.push('/admin');
     }
   };
@@ -52,7 +45,7 @@ const LoginForm = ({ setMessage }) => {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <button type="submit">Log In</button>
+      <button type="submit">Login</button>
     </form>
   );
 };
