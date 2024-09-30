@@ -1,9 +1,12 @@
-import { isAuthenticated } from '../utils/auth';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import LoginForm from '../components/LoginForm';
 
 export const getServerSideProps = async (context) => {
   const { req } = context;
-
-  if (isAuthenticated(req)) {
+  
+  const token = req.cookies.token;
+  if (token) {
     return {
       redirect: {
         destination: '/admin',
@@ -13,7 +16,7 @@ export const getServerSideProps = async (context) => {
   }
 
   return {
-    props: {}, 
+    props: {},
   };
 };
 
