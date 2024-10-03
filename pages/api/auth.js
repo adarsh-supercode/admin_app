@@ -1,15 +1,18 @@
+// pages/api/auth.js
+
 import { supabase } from '../../lib/supabaseClient';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt'; // Import bcrypt
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { type, username, password } = req.body;
+    const { type, username, email, password } = req.body;
 
     try {
       if (type === 'signup') {
         // Check if the username already exists
         const { data: existingUser, error: checkError } = await supabase
-          .from('admin_panel')
+          .from('users')
           .select('*')
           .eq('username', username);
 
@@ -21,10 +24,13 @@ export default async function handler(req, res) {
           return res.status(400).json({ message: 'Username already exists.' });
         }
 
-        // Insert new user into the admin_panel table
+        // Hash the password before inserting it into the database
+        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+
+        // Insert new user into the users table
         const { error: insertError } = await supabase
-          .from('admin_panel')
-          .insert([{ username, password }]);
+          .from('users')
+          .insert([{ username, email, password: hashedPassword }]); // Use hashed password
 
         if (insertError) {
           return res.status(400).json({ message: insertError.message });
@@ -36,12 +42,19 @@ export default async function handler(req, res) {
       if (type === 'login') {
         // Find user by username
         const { data: userData, error: fetchError } = await supabase
-          .from('admin_panel')
+          .from('users')
           .select('*')
           .eq('username', username)
           .single();
 
-        if (fetchError || !userData || userData.password !== password) {
+        if (fetchError || !userData) {
+          return res.status(400).json({ message: 'Invalid credentials.' });
+        }
+
+        // Check if the provided password matches the hashed password
+        const isPasswordValid = await bcrypt.compare(password, userData.password); // Use bcrypt to compare
+
+        if (!isPasswordValid) {
           return res.status(400).json({ message: 'Invalid credentials.' });
         }
 
@@ -57,7 +70,6 @@ export default async function handler(req, res) {
 
       return res.status(405).json({ message: 'Method not allowed' });
     } catch (err) {
-      // Log the error if necessary
       console.error('Error during authentication:', err);
       return res.status(500).json({ message: 'Internal Server Error' });
     }

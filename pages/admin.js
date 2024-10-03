@@ -1,3 +1,5 @@
+// pages/admin.js
+
 import { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../lib/supabaseClient';
@@ -41,8 +43,8 @@ const AdminPanel = ({ user }) => {
   useEffect(() => {
     const fetchProfileData = async () => {
       const { data, error } = await supabase
-        .from('admin_panel')
-        .select('bio, website')
+        .from('users')  // Changed from 'admin_panel' to 'users'
+        .select('bio, website') // Ensure these fields exist in your users table
         .eq('username', user.username)
         .single();
 
@@ -62,8 +64,8 @@ const AdminPanel = ({ user }) => {
     e.preventDefault();
 
     const { error } = await supabase
-      .from('admin_panel')
-      .update({ bio, website })
+      .from('users')  // Changed from 'admin_panel' to 'users'
+      .update({ bio, website }) // Ensure you have these fields in your users table
       .eq('username', user.username);
 
     if (error) {
@@ -112,6 +114,7 @@ const AdminPanel = ({ user }) => {
           </div>
         )}
       </section>
+      
     </div>
   );
 };
