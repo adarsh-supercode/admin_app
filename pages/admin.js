@@ -1,10 +1,10 @@
-// pages/admin.js
-
 import { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../lib/supabaseClient';
 import LogoutButton from '../components/LogoutButton'; 
-import { useRouter } from 'next/router'; // Import useRouter
+import { useRouter } from 'next/router'; 
+import styles from '../styles/AdminPanel.module.css';
+import '../styles/global.css'; 
 
 export const getServerSideProps = async (context) => {
   const { req } = context;
@@ -40,7 +40,7 @@ const AdminPanel = ({ user }) => {
   const [editMode, setEditMode] = useState(false);
   const [profileExists, setProfileExists] = useState(false);
   const [message, setMessage] = useState('');
-  const router = useRouter(); // Initialize router for navigation
+  const router = useRouter();
 
   const fetchProfile = async () => {
     const { data, error } = await supabase
@@ -94,46 +94,57 @@ const AdminPanel = ({ user }) => {
   };
 
   const handleLogoutSuccess = () => {
-    // Redirect to the login page or any other page after logout
     router.push('/login');
   };
 
   return (
     <div>
-      <h1>Admin Panel</h1>
-      <h2>Welcome, {user.username}!</h2>
-
+      <div className={styles.adminContainer}>
+        <h1>Dashboard</h1>
+        <h3 className={styles.user}>{user.username}</h3>
+      </div>
+      <div className={styles.adminPanel}>
+        <h2>Account</h2>
       {editMode ? (
         <div>
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Bio" />
+          <textarea 
+            className={styles.textarea} 
+            value={bio} 
+            onChange={(e) => setBio(e.target.value)} 
+            placeholder="Bio" 
+          />
           <input
+            className={styles.input} 
             type="text"
             value={profileImgUrl}
             onChange={(e) => setProfileImgUrl(e.target.value)}
             placeholder="Profile Image URL"
           />
-          <button onClick={handleSave}>Save</button>
-          <button onClick={() => setEditMode(false)}>Cancel</button>
+          <button className={styles.button} onClick={handleSave}>Save</button>
+          <button className={styles.button} onClick={() => setEditMode(false)}>Cancel</button>
         </div>
       ) : (
-        <div>
+        <div className={styles.accountDetails}>
+           {/* <div className={styles.accountDetails}> */}
           {profileExists ? (
             <>
               <p>Bio: {bio}</p>
-              {profileImgUrl && <img src={profileImgUrl} alt="Profile" style={{ width: '100px', height: '100px' }} />}
-              <button onClick={() => setEditMode(true)}>Edit</button>
+              {profileImgUrl && <img className={styles.profileImg} src={profileImgUrl} alt="Profile" />}
+              <button className={styles.button} onClick={() => setEditMode(true)}>Edit</button>
             </>
           ) : (
             <div>
               <p>No profile data found. Please add your profile information.</p>
-              <button onClick={() => setEditMode(true)}>Add Profile</button>
+              <button className={styles.button} onClick={() => setEditMode(true)}>Add Profile</button>
             </div>
           )}
         </div>
       )}
 
-      <LogoutButton onLogoutSuccess={handleLogoutSuccess} setMessage={setMessage} />
-      {message && <p>{message}</p>}
+      <LogoutButton className={styles.logOutBtn} onLogoutSuccess={handleLogoutSuccess} setMessage={setMessage} />
+      {message && <p className={styles.message}>{message}</p>}
+      </div>
+
     </div>
   );
 };

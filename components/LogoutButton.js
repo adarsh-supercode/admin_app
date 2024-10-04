@@ -1,6 +1,7 @@
 // components/LogoutButton.js
 
 import { useState } from 'react';
+import styles from '../styles/AdminPanel.module.css';
 
 const LogoutButton = ({ onLogoutSuccess, setMessage }) => {
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ const LogoutButton = ({ onLogoutSuccess, setMessage }) => {
   };
 
   return (
-    <button onClick={handleLogout} disabled={loading}>
+    <button className={styles.logOutBtn} onClick={handleLogout} disabled={loading}>
       {loading ? 'Logging out...' : 'Logout'}
     </button>
   );
