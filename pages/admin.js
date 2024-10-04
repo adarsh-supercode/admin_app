@@ -141,7 +141,7 @@ const AdminPanel = ({ user }) => {
         </div>
       )}
 
-      <LogoutButton className={styles.logOutBtn} onLogoutSuccess={handleLogoutSuccess} setMessage={setMessage} />
+      <LogoutButton onLogoutSuccess={handleLogoutSuccess} setMessage={setMessage} />
       {message && <p className={styles.message}>{message}</p>}
       </div>
 
