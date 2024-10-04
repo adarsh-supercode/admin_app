@@ -4,7 +4,6 @@ import { supabase } from '../lib/supabaseClient';
 import LogoutButton from '../components/LogoutButton'; 
 import { useRouter } from 'next/router'; 
 import styles from '../styles/AdminPanel.module.css';
-import '../styles/global.css'; 
 
 export const getServerSideProps = async (context) => {
   const { req } = context;
@@ -134,7 +133,7 @@ const AdminPanel = ({ user }) => {
             </>
           ) : (
             <div>
-              <p>No profile data found. Please add your profile information.</p>
+              {/* <p>No profile data found. Please add your profile information.</p> */}
               <button className={styles.button} onClick={() => setEditMode(true)}>Add Profile</button>
             </div>
           )}
