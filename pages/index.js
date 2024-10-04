@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className={styles.heading}>Home page </h1>
       <nav className={styles.nav}>
         <ul>
-          <li>Don't have account? 
+          <li>Don`&rsquo;`t have account? 
             <Link href="/signup" className={styles.link}>
               Signup
             </Link>
