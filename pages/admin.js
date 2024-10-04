@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../lib/supabaseClient';
-import LogoutButton from '../components/LogoutButton'; // Import LogoutButton component
+import LogoutButton from '../components/LogoutButton'; 
+import { useRouter } from 'next/router'; // Import useRouter
 
 export const getServerSideProps = async (context) => {
   const { req } = context;
@@ -38,6 +39,8 @@ const AdminPanel = ({ user }) => {
   const [profileImgUrl, setProfileImgUrl] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [profileExists, setProfileExists] = useState(false);
+  const [message, setMessage] = useState('');
+  const router = useRouter(); // Initialize router for navigation
 
   const fetchProfile = async () => {
     const { data, error } = await supabase
@@ -90,6 +93,11 @@ const AdminPanel = ({ user }) => {
     setEditMode(false);
   };
 
+  const handleLogoutSuccess = () => {
+    // Redirect to the login page or any other page after logout
+    router.push('/login');
+  };
+
   return (
     <div>
       <h1>Admin Panel</h1>
@@ -124,7 +132,8 @@ const AdminPanel = ({ user }) => {
         </div>
       )}
 
-      <LogoutButton /> {/* Use the LogoutButton component */}
+      <LogoutButton onLogoutSuccess={handleLogoutSuccess} setMessage={setMessage} />
+      {message && <p>{message}</p>}
     </div>
   );
 };

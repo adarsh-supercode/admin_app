@@ -1,22 +1,33 @@
 // components/LogoutButton.js
 
-import { useRouter } from 'next/router';
+import { useState } from 'react';
 
-const LogoutButton = () => {
-  const router = useRouter();
+const LogoutButton = ({ onLogoutSuccess, setMessage }) => {
+  const [loading, setLoading] = useState(false);
 
-  const handleLogout = () => {
-    console.log("Attempting to logout...");
-    document.cookie = 'token=; Max-Age=0; path=/;'; // Clear the token
-    console.log("Logout: Token cleared"); // Confirm token is cleared
-    router.push('/login');
+  const handleLogout = async () => {
+    setLoading(true);
+
+    const res = await fetch('/api/logout', {
+      method: 'POST',
+    });
+
+    const data = await res.json();
+    setMessage(data.message);
+
+    if (res.ok) {
+      onLogoutSuccess(); // This could be a redirect or any other action after successful logout
+    }
+
+    setLoading(false);
   };
-  
+
   return (
-    <button onClick={handleLogout} style={{ marginTop: '20px' }}>
-      Logout
+    <button onClick={handleLogout} disabled={loading}>
+      {loading ? 'Logging out...' : 'Logout'}
     </button>
   );
 };
 
 export default LogoutButton;
+
