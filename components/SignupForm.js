@@ -1,21 +1,20 @@
-// components/SignupForm.js
-
 import { useState } from 'react';
 
 const SignupForm = ({ onSignupSuccess, setMessage }) => {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState(''); // Added email state
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignup = async (e) => {
     e.preventDefault();
 
+    // Send request to /api/auth for signup
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ type: 'signup', username, email, password }), // Include email
+      body: JSON.stringify({ type: 'signup', username, email, password }),
     });
 
     const data = await res.json();
@@ -23,6 +22,8 @@ const SignupForm = ({ onSignupSuccess, setMessage }) => {
 
     if (res.ok) {
       onSignupSuccess();
+    } else {
+      console.error('Signup failed:', data);
     }
   };
 
@@ -36,7 +37,7 @@ const SignupForm = ({ onSignupSuccess, setMessage }) => {
         required
       />
       <input
-        type="email" // Change to email type
+        type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}

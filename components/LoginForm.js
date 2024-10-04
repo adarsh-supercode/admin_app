@@ -1,8 +1,7 @@
-// components/LoginForm.js
-
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+
 
 const LoginForm = ({ setMessage }) => {
   const [username, setUsername] = useState('');

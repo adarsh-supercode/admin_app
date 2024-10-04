@@ -1,8 +1,6 @@
-// pages/api/auth.js
-
 import { supabase } from '../../lib/supabaseClient';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt'; // Import bcrypt
+import bcrypt from 'bcrypt';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -47,25 +45,29 @@ export default async function handler(req, res) {
           .eq('username', username)
           .single();
 
+        // Log the fetched user data
+        console.log('Fetched user data:', userData);
+
+        // Check if there was an error with the query or no user found
         if (fetchError || !userData) {
           return res.status(400).json({ message: 'Invalid credentials.' });
         }
 
         // Check if the provided password matches the hashed password
-        const isPasswordValid = await bcrypt.compare(password, userData.password); // Use bcrypt to compare
+        const isPasswordValid = await bcrypt.compare(password, userData.password);
 
         if (!isPasswordValid) {
           return res.status(400).json({ message: 'Invalid credentials.' });
         }
 
         // Create a JWT token
-        const token = jwt.sign({ username: userData.username }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ username: userData.username, id: userData.id }, process.env.JWT_SECRET, {
           expiresIn: '7d',
         });
 
         // Set the token as a cookie
         res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=604800;`);
-        return res.status(200).json({ message: 'Login successful!' });
+        return res.status(200).json({ message: 'Login successful!', token });
       }
 
       return res.status(405).json({ message: 'Method not allowed' });
